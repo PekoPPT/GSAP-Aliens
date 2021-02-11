@@ -20,6 +20,5 @@ export default class Animation extends EventEmitter {
     await this.cow.hide();
     await this.saucer.toggleBeam(0, 'hide');
     await this.saucer.moveTo(-1800, 'out');
-    // await this.emit(Saucer.events.FLY_OUT);
   }
 }
