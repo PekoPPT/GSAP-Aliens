@@ -21,7 +21,7 @@ export default class Saucer extends EventEmitter {
       id: direction === 'in' ? 'flyIn' : 'flyOut',
       x: pixels,
       ease: Power3.easeOut,
-      onComplete: direction === 'in' ? this.emit(Saucer.events.FLY_IN) : this.emit(Saucer.events.FLY_OUT),
+      onComplete: direction === 'in' ? this.emit(Saucer.events.FLY_IN) : this.emit(Saucer.events.FLY_AWAY),
     });
   }
 
