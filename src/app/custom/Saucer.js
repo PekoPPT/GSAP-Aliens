@@ -1,7 +1,9 @@
 import { gsap, Power3 } from 'gsap/all';
+import EventEmitter from 'eventemitter3';
 
-export default class Saucer {
+export default class Saucer extends EventEmitter {
   constructor() {
+    super();
     this._saucerElement = '';
     this._beamTopElement = '';
     this._beamBottomElement = '';
@@ -15,27 +17,35 @@ export default class Saucer {
   }
 
   async moveTo(pixels, direction) {
-    return gsap.to(this._saucerElement, 2, {
+    await gsap.to(this._saucerElement, 2, {
       id: direction === 'in' ? 'flyIn' : 'flyOut',
       x: pixels,
       ease: Power3.easeOut,
+      onComplete: direction === 'in' ? this.emit(Saucer.events.FLY_IN) : this.emit(Saucer.events.FLY_OUT),
     });
   }
 
   async toggleBeam(opacityValue, showOrHide) {
-    const topBeam = gsap.to(this._beamTopElement, {
+    const timeline = gsap.timeline({
+      onComplete: showOrHide === 'show' ? this.emit(Saucer.events.BEAM_SHOW)
+        : this.emit(Saucer.events.BEAM_HIDE),
+    });
+
+    timeline.to(this._beamTopElement, {
       id: showOrHide === 'show' ? 'showTopBeam' : 'hideTopBeam',
       opacity: opacityValue,
+      duration: 1,
     });
-    const bottomBeam = gsap.to(this._beamBottomElement, {
+    timeline.to(this._beamBottomElement, {
       id: showOrHide === 'show' ? 'showBottomBeam' : 'hideBottomBeam',
       opacity: opacityValue,
+      duration: 1,
     });
 
-    return Promise.all([topBeam, bottomBeam]);
+    return timeline;
   }
 
-  static events() {
+  static get events() {
     return { FLY_IN: 'fly_in', FLY_AWAY: 'fly_away', BEAM_SHOW: 'beam_showed', BEAM_HIDE: 'beam_hide' };
   }
 }
