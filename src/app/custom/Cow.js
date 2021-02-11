@@ -1,7 +1,9 @@
 import { gsap } from 'gsap/all';
+import EventEmitter from 'eventemitter3';
 
-export default class Cow {
+export default class Cow extends EventEmitter {
   constructor() {
+    super();
     this._coweElement = '';
     this.init();
   }
@@ -10,7 +12,7 @@ export default class Cow {
     this._coweElement = document.getElementsByClassName('cow');
   }
 
-  static events() {
+  static get events() {
     return { ABDUCT_COMPLETED: 'abduct_completed' };
   }
 
@@ -25,6 +27,7 @@ export default class Cow {
     return gsap.to(this._coweElement, {
       id: 'cowHide',
       opacity: 0,
+      onComplete: this.emit(Cow.events.ABDUCT_COMPLETED)
     });
   }
 }
