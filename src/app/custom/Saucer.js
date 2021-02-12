@@ -12,19 +12,19 @@ export default class Saucer extends EventEmitter {
 
   async init() {
     this._saucerElement = document.getElementsByClassName('ufo');
-    this._beamTopElement = document.getElementById('beam-top');
-    this._beamBottomElement = document.getElementById('beam-bottom');
+    this.beamTopElement = document.getElementById('beam-top');
+    this.beamBottomElement = document.getElementById('beam-bottom');
   }
 
   async moveTo(pixels, direction) {
     if (direction === 'in') {
-      await gsap.to(this._saucerElement, 2, {
+      return gsap.to(this._saucerElement, 2, {
         id: 'flyIn',
         x: pixels,
         onComplete: this.emit(Saucer.events.FLY_IN),
       });
     } else if (direction === 'out') {
-      await gsap.to(this._saucerElement, 2, {
+      return gsap.to(this._saucerElement, 2, {
         id: 'flyOut',
         x: pixels,
         onComplete: this.emit(Saucer.events.FLY_AWAY),
