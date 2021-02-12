@@ -5,15 +5,15 @@ export default class Saucer extends EventEmitter {
   constructor() {
     super();
     this._saucerElement = '';
-    this.beamTopElement = '';
-    this.beamBottomElement = '';
+    this._beamTopElement = '';
+    this._beamBottomElement = '';
     this.init();
   }
 
   async init() {
     this._saucerElement = document.getElementsByClassName('ufo');
-    this.beamTopElement = document.getElementById('beam-top');
-    this.beamBottomElement = document.getElementById('beam-bottom');
+    this._beamTopElement = document.getElementById('beam-top');
+    this._beamBottomElement = document.getElementById('beam-bottom');
   }
 
   async moveTo(pixels, direction) {
@@ -36,33 +36,29 @@ export default class Saucer extends EventEmitter {
     let timeline;
 
     if (showOrHide === 'show') {
-      timeline = gsap.timeline({
-        onComplete: this.emit(Saucer.events.BEAM_SHOW),
-      });
+      timeline = gsap.timeline();
 
-      timeline.to(this.beamTopElement, {
+      timeline.to(this._beamTopElement, {
         id: 'showTopBeam',
         opacity: opacityValue,
       }, 'beam');
-      timeline.to(this.beamBottomElement, {
+      timeline.to(this._beamBottomElement, {
         id: 'showBottomBeam',
         opacity: opacityValue,
+        onComplete: this.emit(Saucer.events.BEAM_SHOW),
       }, 'beam');
-
     } else if (showOrHide === 'hide') {
-      timeline = gsap.timeline({
-        onComplete: this.emit(Saucer.events.BEAM_HIDE),
-      });
+      timeline = gsap.timeline();
 
-      timeline.to(this.beamTopElement, {
+      timeline.to(this._beamTopElement, {
         id: 'hideTopBeam',
         opacity: opacityValue,
       }, 'beam');
-      timeline.to(this.beamBottomElement, {
+      timeline.to(this._beamBottomElement, {
         id: 'hideBottomBeam',
         opacity: opacityValue,
+        onComplete: this.emit(Saucer.events.BEAM_HIDE),
       }, 'beam');
-
     }
 
     return timeline;
