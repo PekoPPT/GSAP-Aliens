@@ -1,4 +1,4 @@
-import { gsap, Power3 } from 'gsap/all';
+import { gsap } from 'gsap/all';
 import EventEmitter from 'eventemitter3';
 
 export default class Saucer extends EventEmitter {
@@ -17,30 +17,53 @@ export default class Saucer extends EventEmitter {
   }
 
   async moveTo(pixels, direction) {
-    await gsap.to(this._saucerElement, 2, {
-      id: direction === 'in' ? 'flyIn' : 'flyOut',
-      x: pixels,
-      ease: Power3.easeOut,
-      onComplete: direction === 'in' ? this.emit(Saucer.events.FLY_IN) : this.emit(Saucer.events.FLY_AWAY),
-    });
+    if (direction === 'in') {
+      await gsap.to(this._saucerElement, 2, {
+        id: 'flyIn',
+        x: pixels,
+        onComplete: this.emit(Saucer.events.FLY_IN),
+      });
+    } else if (direction === 'out') {
+      await gsap.to(this._saucerElement, 2, {
+        id: 'flyOut',
+        x: pixels,
+        onComplete: this.emit(Saucer.events.FLY_AWAY),
+      });
+    }
   }
 
   async toggleBeam(opacityValue, showOrHide) {
-    const timeline = gsap.timeline({
-      onComplete: showOrHide === 'show' ? this.emit(Saucer.events.BEAM_SHOW)
-        : this.emit(Saucer.events.BEAM_HIDE),
-    });
+    let timeline;
 
-    timeline.to(this._beamTopElement, {
-      id: showOrHide === 'show' ? 'showTopBeam' : 'hideTopBeam',
-      opacity: opacityValue,
-      duration: 1,
-    });
-    timeline.to(this._beamBottomElement, {
-      id: showOrHide === 'show' ? 'showBottomBeam' : 'hideBottomBeam',
-      opacity: opacityValue,
-      duration: 1,
-    });
+    if (showOrHide === 'show') {
+      timeline = gsap.timeline({
+        onComplete: this.emit(Saucer.events.BEAM_SHOW),
+      });
+
+      timeline.to(this._beamTopElement, {
+        id: 'showTopBeam',
+        opacity: opacityValue,
+      }, 'beam');
+      timeline.to(this._beamBottomElement, {
+        id: 'showBottomBeam',
+        opacity: opacityValue,
+      }, 'beam');
+
+    } else if (showOrHide === 'hide') {
+      timeline = gsap.timeline({
+        onComplete: this.emit(Saucer.events.BEAM_HIDE),
+      });
+
+      timeline.to(this._beamTopElement, {
+        id: 'hideTopBeam',
+        opacity: opacityValue,
+      }, 'beam');
+      timeline.to(this._beamBottomElement, {
+        id: 'hideBottomBeam',
+        opacity: opacityValue,
+      }, 'beam');
+
+    }
 
     return timeline;
   }
