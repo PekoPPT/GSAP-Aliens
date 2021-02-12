@@ -5,8 +5,8 @@ export default class Saucer extends EventEmitter {
   constructor() {
     super();
     this._saucerElement = '';
-    this._beamTopElement = '';
-    this._beamBottomElement = '';
+    this.beamTopElement = '';
+    this.beamBottomElement = '';
     this.init();
   }
 
@@ -40,11 +40,11 @@ export default class Saucer extends EventEmitter {
         onComplete: this.emit(Saucer.events.BEAM_SHOW),
       });
 
-      timeline.to(this._beamTopElement, {
+      timeline.to(this.beamTopElement, {
         id: 'showTopBeam',
         opacity: opacityValue,
       }, 'beam');
-      timeline.to(this._beamBottomElement, {
+      timeline.to(this.beamBottomElement, {
         id: 'showBottomBeam',
         opacity: opacityValue,
       }, 'beam');
@@ -54,11 +54,11 @@ export default class Saucer extends EventEmitter {
         onComplete: this.emit(Saucer.events.BEAM_HIDE),
       });
 
-      timeline.to(this._beamTopElement, {
+      timeline.to(this.beamTopElement, {
         id: 'hideTopBeam',
         opacity: opacityValue,
       }, 'beam');
-      timeline.to(this._beamBottomElement, {
+      timeline.to(this.beamBottomElement, {
         id: 'hideBottomBeam',
         opacity: opacityValue,
       }, 'beam');
