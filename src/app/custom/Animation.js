@@ -11,14 +11,15 @@ export default class Animation extends EventEmitter {
   }
 
   async start() {
+    const that = this;
+
     this.saucer = new Saucer();
     this.cow = new Cow();
+    this.saucer.addListener('beam_showed', function () { that.cow.moveTo(); });
+    this.cow.addListener('abduct_completed', function () { that.saucer.toggleBeam(); });
+    this.saucer.addListener('beam_hide', function () { that.saucer.moveTo(); });
 
-    await this.saucer.moveTo(-835, 'in');
-    await this.saucer.toggleBeam(0.6, 'show');
-    await this.cow.moveTo(-390);
-    await this.cow.hide();
-    await this.saucer.toggleBeam(0, 'hide');
-    await this.saucer.moveTo(-1800, 'out');
+    await this.saucer.moveTo();
+
   }
 }
