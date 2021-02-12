@@ -7,6 +7,8 @@ export default class Saucer extends EventEmitter {
     this._saucerElement = '';
     this._beamTopElement = '';
     this._beamBottomElement = '';
+    this.sauserMoved = false;
+    this.beamShowed = false;
     this.init();
   }
 
@@ -16,52 +18,67 @@ export default class Saucer extends EventEmitter {
     this._beamBottomElement = document.getElementById('beam-bottom');
   }
 
-  async moveTo(pixels, direction) {
-    if (direction === 'in') {
-      return gsap.to(this._saucerElement, 2, {
+  async moveTo() {
+    const that = this;
+
+    if (!this.sauserMoved) {
+      gsap.to(this._saucerElement, {
         id: 'flyIn',
-        x: pixels,
-        onComplete: this.emit(Saucer.events.FLY_IN),
+        x: -835,
+        onComplete() {
+          that.emit(Saucer.events.FLY_IN);
+          that.toggleBeam();
+
+          return;
+        },
       });
-    } else if (direction === 'out') {
-      return gsap.to(this._saucerElement, 2, {
+      this.sauserMoved = true;
+    } else {
+      gsap.to(this._saucerElement, {
         id: 'flyOut',
-        x: pixels,
-        onComplete: this.emit(Saucer.events.FLY_AWAY),
+        x: -1800,
+        onComplete() {
+          that.emit(Saucer.events.FLY_OUT);
+        },
       });
     }
   }
 
-  async toggleBeam(opacityValue, showOrHide) {
-    let timeline;
+  async toggleBeam() {
+    const that = this;
 
-    if (showOrHide === 'show') {
-      timeline = gsap.timeline();
+    const timeline = gsap.timeline({
+    });
+
+    if (!this.beamShowed) {
 
       timeline.to(this._beamTopElement, {
         id: 'showTopBeam',
-        opacity: opacityValue,
+        opacity: 0.6,
       }, 'beam');
+
       timeline.to(this._beamBottomElement, {
         id: 'showBottomBeam',
-        opacity: opacityValue,
-        onComplete: this.emit(Saucer.events.BEAM_SHOW),
+        opacity: 0.6,
+        onComplete() { that.emit(Saucer.events.BEAM_SHOW); },
+
       }, 'beam');
-    } else if (showOrHide === 'hide') {
-      timeline = gsap.timeline();
+
+      this.beamShowed = !this.beamShowed;
+
+    } else {
 
       timeline.to(this._beamTopElement, {
         id: 'hideTopBeam',
-        opacity: opacityValue,
+        opacity: 0,
       }, 'beam');
+
       timeline.to(this._beamBottomElement, {
         id: 'hideBottomBeam',
-        opacity: opacityValue,
-        onComplete: this.emit(Saucer.events.BEAM_HIDE),
+        opacity: 0,
+        onComplete() { that.emit(Saucer.events.BEAM_HIDE); },
       }, 'beam');
     }
-
-    return timeline;
   }
 
   static get events() {
